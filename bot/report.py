@@ -9,14 +9,14 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")  # pencere açmadan dosyaya çizim
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
 
-from bot.backtester import BacktestResult  # noqa: E402
-from bot.metrics import GateCheck  # noqa: E402
-from bot.timeutil import fmt_utc  # noqa: E402
+from bot.backtester import BacktestResult
+from bot.metrics import GateCheck
+from bot.timeutil import fmt_utc
 
 PERIOD_LABELS = {"dev": "GELİŞTİRME DÖNEMİ", "exam": "SINAV DÖNEMİ"}
 # Not: Python'da "İ".lower() iki karakter üretir; Türkçe başlıkları ayrı yazıyoruz.

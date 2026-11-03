@@ -100,7 +100,7 @@ class Portfolio:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any], trades: list[Trade] | None = None) -> "Portfolio":
+    def from_dict(cls, data: dict[str, Any], trades: list[Trade] | None = None) -> Portfolio:
         portfolio = cls(data["initial_cash"])
         portfolio.cash = float(data["cash"])
         portfolio.reserved = float(data["reserved"])

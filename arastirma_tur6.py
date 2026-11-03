@@ -257,7 +257,7 @@ def run_stage_a(cfg: Config, market: A.Market, rules: dict[str, MarketRules],
             s.selections[(profile, c.code)] = evaluate(s, c, profile)
         s.chosen[profile] = choose(s, profile)
     # Bilgi: seçilen seviyelerde şaltersiz koşu ve Monte Carlo.
-    for (profile, code), sel in s.selections.items():
+    for (_profile, code), sel in s.selections.items():
         c = next(x for x in CANDIDATES if x.code == code)
         sig = build_signals(c, A.apply_overrides(cfg, futures_overrides(BASE_RISK, "stres", c.allow_short)), market)
         cfg_c = A.apply_overrides(cfg, futures_overrides(sel.risk, "stres", c.allow_short, halt=False))

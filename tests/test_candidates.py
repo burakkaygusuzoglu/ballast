@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from helpers import H1, M15, loose_rules, make_candles, resample, with_overrides
 
 from bot.backtester import iter_signal_bars, run_backtest
 from bot.candidates import (
@@ -12,7 +13,6 @@ from bot.candidates import (
     resample_candles,
 )
 from bot.timeutil import DAY_MS, parse_utc
-from helpers import H1, M15, loose_rules, make_candles, resample, with_overrides
 
 H4 = 4 * H1
 RULES = loose_rules(["BTC/USDT"])

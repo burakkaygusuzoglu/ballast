@@ -14,6 +14,7 @@ Tekrar çalıştırmak güvenlidir: var olan sanal ortam ve depo yeniden kullan�
 """
 from __future__ import annotations
 
+import contextlib
 import os
 import platform
 import shutil
@@ -41,7 +42,7 @@ FIRST_COMMIT = (
 class Log:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
-        self.fh = open(path, "w", encoding="utf-8")
+        self.fh = open(path, "w", encoding="utf-8")  # noqa: SIM115 - log stays open for the whole run
 
     def write(self, text: str) -> None:
         if text:
@@ -90,7 +91,7 @@ def run(cmd: list, timeout: int = 600, cwd: Path = ROOT, stdin_text: str | None 
     env = dict(os.environ)
     env.update({"PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1", "PIP_DISABLE_PIP_VERSION_CHECK": "1"})
     try:
-        cp = subprocess.run(args, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        cp = subprocess.run(args, check=False, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace",
                             timeout=timeout, env=env, input=stdin_text)
     except FileNotFoundError:
         cp = subprocess.CompletedProcess(args, 127, "", f"komut bulunamadı: {args[0]}")
@@ -372,12 +373,10 @@ def setup_git() -> bool:
 def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
-            try:
+            with contextlib.suppress(ValueError, OSError):
                 stream.reconfigure(errors="replace")
-            except (ValueError, OSError):
-                pass
     say("=" * 70)
-    say(f" KRİPTO BOT - KURULUM ve DOĞRULAMA   ({datetime.now():%Y-%m-%d %H:%M})")
+    say(f" KRİPTO BOT - KURULUM ve DOĞRULAMA   ({datetime.now().astimezone():%Y-%m-%d %H:%M})")
     say("=" * 70)
     say(f" Sistem: {platform.system()} {platform.release()} | {platform.machine()}")
 

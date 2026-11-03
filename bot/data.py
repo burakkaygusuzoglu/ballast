@@ -106,13 +106,13 @@ def load_timeframe(cfg: Config, symbol: str, timeframe: str) -> pd.DataFrame:
         return load_candles(path)
     source = candle_path(cfg.data_dir, cfg.exchange.id, symbol, "1h")
     if TIMEFRAME_MS[timeframe] > TIMEFRAME_MS["1h"] and source.exists():
-        from bot.candidates import resample_candles      # döngüsel içe aktarmayı önlemek için burada
+        from bot.candidates import resample_candles  # döngüsel içe aktarmayı önlemek için burada
         return resample_candles(load_candles(source), TIMEFRAME_MS["1h"], TIMEFRAME_MS[timeframe])
     raise FileNotFoundError(path.name)
 
 
 def update_candles(
-    client: "ExchangeClient",
+    client: ExchangeClient,
     symbol: str,
     timeframe: str,
     tf_ms: int,

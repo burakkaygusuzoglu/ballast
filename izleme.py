@@ -670,7 +670,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.esdeger:
         from bot.exchange import ExchangeClient
         print("Eşdeğerlik kontrolü: geçmiş mumlar Binance'ten indiriliyor (yalnızca okuma, anahtar gerekmez)...")
-        run_parity(panel, lambda cfg: ExchangeClient(cfg))
+        run_parity(panel, ExchangeClient)
     print(format_console(panel))
     page = save_panel(panel, PROJECT_ROOT / REPORT_DIR)
     print(f"\nRapor: {page}")

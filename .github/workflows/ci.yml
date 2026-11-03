@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install ruff
+      - run: ruff check .
+
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -r requirements.txt pytest-cov
+      - name: Run tests with coverage
+        run: python -m pytest -q --cov --cov-report=term --cov-report=xml
+      - name: Coverage summary
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import xml.etree.ElementTree as ET
+          rate = float(ET.parse("coverage.xml").getroot().get("line-rate")) * 100
+          print(f"### Line coverage of `bot/`: {rate:.1f} %")
+          PY

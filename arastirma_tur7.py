@@ -256,7 +256,7 @@ def format_stage_a(s: StageA) -> str:
                      "Ort. işlem riski", "Şalter"], rows) + [""]
     out += ["**50 USDT ile (gerçek minimum işlem tutarları)**", ""]
     rows = []
-    for code, setup in setups().items():
+    for code in setups():
         for name, plabel in A.PERIODS:
             run = s.real[(code, name)]
             m = run.metrics

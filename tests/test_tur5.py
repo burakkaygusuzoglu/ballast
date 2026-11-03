@@ -89,7 +89,7 @@ def test_sizing_mode_is_validated(tmp_path):
     text = (Path(__file__).resolve().parent / "config_test.yaml").read_text(encoding="utf-8")
     bad = tmp_path / "bad.yaml"
     bad.write_text(text.replace("risk:\n", "risk:\n  sizing: yarim\n", 1), encoding="utf-8")
-    with pytest.raises(ConfigError, match="risk.sizing"):
+    with pytest.raises(ConfigError, match=r"risk\.sizing"):
         load_config(bad)
     good = tmp_path / "good.yaml"
     good.write_text(text.replace("risk:\n", "risk:\n  sizing: allocation\n", 1), encoding="utf-8")
@@ -110,7 +110,7 @@ def test_members_are_the_locked_bots_of_earlier_rounds():
     assert team["R3"].overrides == t3["R3"].overrides and team["R3A"].overrides == w0a.overrides
     assert all(team[c].symbols == T4.C1_SYMBOLS for c in ("C1", "R1", "R3", "R3A"))
     assert team["L1"].symbols == ("BTC/USDT", "ETH/USDT") and team["L1"].entry_tf == "1d"
-    assert T5.L1_PARAMS == TrendParams(sma_n=200, atr_n=20) and T5.L1_ROBUST_SMA == (150, 250)
+    assert TrendParams(sma_n=200, atr_n=20) == T5.L1_PARAMS and T5.L1_ROBUST_SMA == (150, 250)
     risk = T5.L1_RULES["risk"]
     assert (risk["sizing"], risk["max_position_pct"], risk["max_open_positions"]) == ("allocation", 0.5, 2)
     assert (risk["stop_atr_mult"], risk["cooldown_bars"], risk["daily_loss_limit"], risk["max_drawdown_halt"]) == (

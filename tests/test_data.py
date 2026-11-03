@@ -1,13 +1,21 @@
 """Veri katmanı: birleştirme, kapanmamış mum, boşluklar, dosya ve artımlı güncelleme."""
 import pandas as pd
 import pytest
+from helpers import H1, M15, FakeClient, make_candles, resample
 
 from bot.config import MarketRules
 from bot.data import (
-    candle_path, candles_from_rows, drop_unclosed, find_gaps, load_candles, load_market_rules,
-    merge_candles, save_candles, save_market_rules, update_candles,
+    candle_path,
+    candles_from_rows,
+    drop_unclosed,
+    find_gaps,
+    load_candles,
+    load_market_rules,
+    merge_candles,
+    save_candles,
+    save_market_rules,
+    update_candles,
 )
-from helpers import H1, M15, FakeClient, make_candles, resample
 
 
 def test_rows_are_sorted_and_deduplicated():

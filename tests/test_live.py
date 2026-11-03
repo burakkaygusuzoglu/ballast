@@ -5,6 +5,8 @@ import dataclasses
 import ccxt
 import pytest
 import yaml
+from fake_exchange import FEE, FakeExchange, FakeLiveClient
+from helpers import H4, TEST_CONFIG_PATH, FakeSource, loose_rules, make_candles, with_overrides
 
 import run
 from bot.backtester import run_backtest
@@ -17,8 +19,6 @@ from bot.paper import PaperTrader
 from bot.portfolio import Portfolio
 from bot.signals import build_signals
 from bot.storage import StateStore
-from fake_exchange import FEE, FakeExchange, FakeLiveClient
-from helpers import H4, TEST_CONFIG_PATH, FakeSource, loose_rules, make_candles, with_overrides
 
 SYM = "SOL/USDT"
 BAR = H4
@@ -57,7 +57,7 @@ def test_parse_order_splits_fees_by_currency():
 
 
 def test_network_error_after_send_does_not_duplicate_order():
-    ex, portfolio, broker, _ = make()
+    ex, _portfolio, broker, _ = make()
     ex.network_error_after_create = True              # emir borsaya ulaştı ama cevap kayboldu
     fills = broker.submit_entry(entry(), ref_price=100.0)
     buys = [o for o in ex.created if o["type"] == "market" and o["side"] == "buy"]
@@ -285,7 +285,7 @@ def test_testnet_once_and_status(live_project, capsys):
 
 
 def test_real_mode_refuses_withdrawal_permission(live_project, capsys):
-    tmp_path, client, write = live_project
+    _tmp_path, client, write = live_project
     write(testnet=False)
     client.restrictions["enableWithdrawals"] = True
     assert run.main(["--mode", "live", "--once"]) == 2
@@ -293,7 +293,7 @@ def test_real_mode_refuses_withdrawal_permission(live_project, capsys):
 
 
 def test_real_mode_requires_typed_confirmation(live_project, capsys, monkeypatch):
-    tmp_path, client, write = live_project
+    tmp_path, _client, write = live_project
     write(testnet=False)
     monkeypatch.setattr("builtins.input", lambda _prompt="": "hayir")
     assert run.main(["--mode", "live", "--once"]) == 1
@@ -356,8 +356,9 @@ def test_engine_records_immediate_live_fills_in_risk_manager(cfg):
 
 
 def test_local_time_label():
-    from bot.timeutil import fmt_local, utc_offset_label
     from datetime import datetime, timedelta, timezone
+
+    from bot.timeutil import fmt_local, utc_offset_label
     assert utc_offset_label(datetime(2026, 10, 8, tzinfo=timezone(timedelta(hours=2)))) == "UTC+2"
     assert utc_offset_label(datetime(2026, 1, 8, tzinfo=timezone(timedelta(hours=5, minutes=30)))) == "UTC+5:30"
     assert utc_offset_label(datetime(2026, 1, 8, tzinfo=timezone(timedelta(hours=-3)))) == "UTC-3"
@@ -386,7 +387,7 @@ def btc_entry(qty, stop):
 
 def test_tiny_position_is_sized_to_stay_sellable_after_fee_and_rounding():
     ex, portfolio, broker = make_btc()
-    (fill,) = broker.submit_entry(btc_entry(0.00007, 79_680.0), ref_price=83_000.0)   # ~5,8 USDT
+    (_fill,) = broker.submit_entry(btc_entry(0.00007, 79_680.0), ref_price=83_000.0)   # ~5,8 USDT
     # 0.00007 BTC alınsaydı komisyon sonrası 0.00006 BTC kalırdı: stopta 4,8 USDT < 5 (satılamazdı).
     assert ex.created[0]["amount"] == pytest.approx(0.00008)
     (stop,) = ex.open_stops()

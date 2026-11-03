@@ -5,6 +5,7 @@ import json
 import numpy as np
 import pandas as pd
 import pytest
+from helpers import D1, H4, loose_rules, make_candles, with_overrides
 
 from bot.backtester import iter_signal_bars
 from bot.brokers.base import Bar, EntryOrder
@@ -14,7 +15,6 @@ from bot.engine import TradingEngine
 from bot.portfolio import Portfolio
 from bot.risk import RiskManager
 from bot.timeutil import DAY_MS, parse_utc
-from helpers import D1, H4, loose_rules, make_candles, with_overrides
 
 START = parse_utc("2024-01-01")
 
@@ -94,7 +94,7 @@ def test_momentum_signals_have_no_lookahead(cfg, daily_market):
 
 def test_momentum_buys_strongest_positive_coins_and_sells_laggards(cfg):
     n = 300
-    up = lambda rate: [100.0 * (1 + rate) ** i for i in range(n)]      # noqa: E731
+    up = lambda rate: [100.0 * (1 + rate) ** i for i in range(n)]
     coins = {
         "A/USDT": daily_from_closes(up(0.004)),
         "B/USDT": daily_from_closes(up(0.003)),
@@ -164,7 +164,7 @@ def test_pyramiding_adds_units_every_half_atr_and_raises_stop(cfg):
 
 
 def test_pyramiding_off_keeps_single_unit(cfg):
-    engine, portfolio, history = run_engine(pyramid_cfg(cfg, pyramid_units=1), {SYM: trend_signals()})
+    engine, _portfolio, history = run_engine(pyramid_cfg(cfg, pyramid_units=1), {SYM: trend_signals()})
     assert engine.adds_submitted == 0 and max(h[SYM].units for h in history if SYM in h) == 1
 
 
@@ -212,7 +212,7 @@ def tur3_run(cfg, tmp_path_factory):
 
 
 def test_tur3_uses_common_start_after_regime_warmup_and_no_exam_data(tur3_run):
-    T3, study, market, exam, _ = tur3_run
+    _T3, study, market, exam, _ = tur3_run
     start, split = study.bounds["kesif"]
     assert start >= parse_utc("2024-01-01") + 200 * DAY_MS and start % DAY_MS == 0
     assert split == parse_utc("2025-01-01") and study.bounds["dogrulama"] == (split, min(
@@ -248,7 +248,7 @@ def test_tur3_applies_protocol_and_reports(tur3_run):
 
 
 def test_tur3_improvement_check_compares_with_reference(tur3_run):
-    T3, study, _, _, _ = tur3_run
+    _T3, study, _, _, _ = tur3_run
     ref = study.reports[0]
     for r in study.reports[1:]:
         ok, _ = r.checks["iyilesme"]
@@ -260,12 +260,13 @@ def test_tur3_improvement_check_compares_with_reference(tur3_run):
 # ---------------------------------------------------------------------------
 # Gölge botlar: paper trading, backtest ile birebir aynı kararları vermeli
 # ---------------------------------------------------------------------------
-from bot.backtester import run_backtest                       # noqa: E402
-from bot.candidates import resample_candles                    # noqa: E402
-from bot.paper import PaperTrader                              # noqa: E402
-from bot.signals import build_market_signals, uses_trend       # noqa: E402
-from bot.storage import StateStore                             # noqa: E402
-from helpers import FakeSource                                 # noqa: E402
+from helpers import FakeSource  # noqa: E402
+
+from bot.backtester import run_backtest  # noqa: E402
+from bot.candidates import resample_candles  # noqa: E402
+from bot.paper import PaperTrader  # noqa: E402
+from bot.signals import build_market_signals, uses_trend  # noqa: E402
+from bot.storage import StateStore  # noqa: E402
 
 SHADOW = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "XRP/USDT"]
 
@@ -325,9 +326,10 @@ def test_momentum_shadow_paper_matches_backtest(cfg, tmp_path):
 
 
 def test_shadow_configs_load_and_match_research_rules():
+    from pathlib import Path
+
     from bot.config import load_config
     from bot.signals import momentum_params
-    from pathlib import Path
     root = Path(__file__).resolve().parent.parent / "config"
     r1, r3 = load_config(root / "golge_r1.yaml"), load_config(root / "golge_r3.yaml")
     base = load_config(root / "config.yaml")

@@ -1,9 +1,11 @@
 """Strateji: geleceği görme hatasına karşı koruma ve filtrelerin doğru çalışması."""
+import itertools
+
 import numpy as np
 import pytest
+from helpers import H1, M15, make_candles, with_overrides
 
 from bot.strategy import CONDITION_COLUMNS, compute_signals, signal_funnel
-from helpers import H1, M15, make_candles, with_overrides
 
 COMPARE = ["atr", "rsi", "ema_fast", "cost_r", "trend_close", "trend_ema_slow", "entry_signal", "regime_ok",
            *CONDITION_COLUMNS]
@@ -62,7 +64,7 @@ def test_signal_funnel_is_monotonic(cfg, market_15m, market_1h):
     rows = signal_funnel(sig, int(sig["ts"].iloc[0]), int(sig["ts"].iloc[-1]) + 1)
     counts = [count for _, count in rows]
     assert counts[0] == len(sig)
-    assert all(a >= b for a, b in zip(counts, counts[1:], strict=False))
+    assert all(a >= b for a, b in itertools.pairwise(counts))
     assert counts[-1] == int(sig["entry_signal"].sum())
 
 

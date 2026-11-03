@@ -67,7 +67,7 @@ class RiskState:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "RiskState":
+    def from_dict(cls, data: dict[str, Any]) -> RiskState:
         return cls(**data)
 
 

@@ -5,11 +5,11 @@ from types import SimpleNamespace
 import numpy as np
 import pandas as pd
 import pytest
+from helpers import H1, loose_rules, make_candles, with_overrides
 
 import arastirma as A
 from bot.candidates import BreakoutParams, MeanRevParams
 from bot.timeutil import DAY_MS, TIMEFRAME_MS, parse_utc
-from helpers import H1, loose_rules, make_candles, with_overrides
 
 EXAM = "2025-03-01"
 SYMBOLS = ["BTC/USDT", "ETH/USDT"]

@@ -1,9 +1,10 @@
 """4. tur veri hazırlığı: geniş evren 2. turdaki kuralla seçilir, BTC ve ETH her zaman indirilir."""
+from helpers import H1, FakeClient, make_candles, with_overrides
+
 import arastirma_verisi as V
 import tur4_veri as T4
 from bot.data import candle_path
 from bot.timeutil import parse_utc
-from helpers import H1, FakeClient, make_candles, with_overrides
 
 
 class UniverseClient(FakeClient):
@@ -22,7 +23,7 @@ def test_round4_downloads_btc_eth_and_selects_by_rank(cfg, tmp_path, monkeypatch
     monkeypatch.setattr(T4, "TUR4_SIZE", 3)
     c = with_overrides(cfg, data={"exam_start": "2022-03-01", "dir": str(tmp_path)})
     bars = (parse_utc("2022-03-10") - parse_utc("2022-01-01")) // H1
-    full = lambda seed: make_candles(bars, seed=seed, start="2022-01-01", tf_ms=H1)     # noqa: E731
+    full = lambda seed: make_candles(bars, seed=seed, start="2022-01-01", tf_ms=H1)
     data = {(s, "1h"): full(i) for i, s in enumerate(["BTC/USDT", "ETH/USDT", "AAA/USDT", "BBB/USDT", "CCC/USDT",
                                                       "DDD/USDT"])}
     data[("HOLE/USDT", "1h")] = full(9).drop(index=range(300, 300 + 24 * 9)).reset_index(drop=True)

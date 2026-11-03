@@ -48,7 +48,7 @@ def test_market_entry_pays_slippage_and_taker():
 
 
 def test_order_waits_until_ttl():
-    portfolio, broker = make_broker()
+    _portfolio, broker = make_broker()
     broker.submit_entry(limit_order(ttl=2), ref_price=100.0)
     broker.process_bar(SYM, Bar(1, 101, 102, 100.5, 101))
     assert broker.has_pending_entry(SYM)
@@ -80,7 +80,7 @@ def test_same_bar_entry_then_stop():
 
 
 def test_requested_exit_executes_at_next_open():
-    portfolio, broker = make_broker()
+    _portfolio, broker = make_broker()
     broker.submit_entry(limit_order(), ref_price=100.0)
     broker.process_bar(SYM, Bar(1, 101, 102, 99.5, 101))
     broker.request_exit(SYM, "rejim bozuldu")
@@ -106,7 +106,7 @@ def test_equity_is_conserved_without_price_change():
 
 
 def test_cannot_overspend():
-    portfolio, broker = make_broker(cash=50.0)
+    _portfolio, broker = make_broker(cash=50.0)
     with pytest.raises(InsufficientCash):
         broker.submit_entry(limit_order(qty=1.0, limit=100.0), ref_price=100.0)
 

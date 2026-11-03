@@ -294,7 +294,7 @@ def common_bounds(cfg: Config, market: A.Market, candidates: list[T3Candidate]) 
     start = max(starts)
     start = -(-start // DAY_MS) * DAY_MS               # bir sonraki UTC gün başına yuvarla (tüm dilimler hizalı)
     split, exam = parse_utc(A.VALIDATION_START), parse_utc(cfg.data.exam_start)
-    end = min(min(ends), exam)
+    end = min(*ends, exam)
     if not start < split < end:
         raise ValueError("Veri keşif ve doğrulama dönemlerini kapsamıyor.")
     return {"kesif": (start, split), "dogrulama": (split, end)}

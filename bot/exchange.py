@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 import ccxt
 from ccxt.base.decimal_to_precision import DECIMAL_PLACES

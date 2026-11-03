@@ -1,6 +1,7 @@
 """Komut satırı araçları için ortak yardımcılar."""
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import os
 import sys
@@ -13,10 +14,8 @@ def setup_console() -> None:
     """Windows konsolunda yazdırılamayan bir karakter programı asla çökertmesin."""
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
-            try:
+            with contextlib.suppress(ValueError, OSError):
                 stream.reconfigure(errors="replace")
-            except (ValueError, OSError):
-                pass
 
 
 ENABLE_QUICK_EDIT_MODE = 0x0040
@@ -63,7 +62,5 @@ def confirm(question: str, expected: str) -> bool:
 def open_file(path: Path) -> None:
     """Dosyayı Windows'ta varsayılan programla açar; başka sistemlerde sessizce geçer."""
     if sys.platform == "win32":
-        try:
+        with contextlib.suppress(OSError):
             os.startfile(str(path))  # type: ignore[attr-defined]
-        except OSError:
-            pass

@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
+from helpers import H1, TEST_CONFIG_PATH, make_candles, resample
 
 from bot.config import Config, load_config
-from helpers import H1, TEST_CONFIG_PATH, make_candles, resample
 
 
 @pytest.fixture(scope="session")

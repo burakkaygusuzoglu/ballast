@@ -1,0 +1,45 @@
+[project]
+name = "ballast"
+version = "0.9.0"
+description = "Pre-registered research and risk-first execution for systematic crypto strategies"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Burak Kaygusuzoglu" }]
+requires-python = ">=3.11"
+dependencies = ["ccxt", "pandas", "numpy", "matplotlib", "pyyaml", "python-dotenv"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "ruff"]
+
+[project.urls]
+Repository = "https://github.com/burakkaygusuzoglu/ballast"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [".venv", "data", "reports", "logs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "BLE", "S110", "DTZ", "PLW"]
+ignore = [
+    "RUF001", "RUF002", "RUF003",  # Turkish characters in strings, docstrings and comments are intended
+    "RUF005",                      # list concatenation reads more clearly in report builders
+    "E731",                        # short formatting lambdas in report code
+    "SIM108",                      # nested ternaries would hurt readability
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 140             # aligned trailing comments; code itself stays near 120
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "B011"]
+# Fail-safe boundaries: every exchange / OS call catches broadly, logs, and keeps positions protected.
+"bot/brokers/live.py" = ["BLE001"]
+"bot/cli.py" = ["BLE001", "S110"]
+"scripts/*" = ["BLE001"]
+
+[tool.coverage.run]
+source = ["bot"]
+
+[tool.coverage.report]
+skip_empty = true

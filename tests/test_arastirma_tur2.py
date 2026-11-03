@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 import pandas as pd
 import pytest
+from helpers import H1, FakeClient, loose_rules, make_candles, with_overrides
 
 import arastirma as A
 import arastirma_tur2 as T
@@ -11,7 +12,6 @@ import arastirma_verisi as V
 from bot.config import MarketRules
 from bot.data import candle_path, load_market_rules
 from bot.timeutil import DAY_MS, parse_utc
-from helpers import H1, FakeClient, loose_rules, make_candles, with_overrides
 
 COINS = ["AAA/USDT", "BBB/USDT", "CCC/USDT", "DDD/USDT"]
 
@@ -47,7 +47,7 @@ def test_universe_takes_first_eligible_coins_in_order(cfg, tmp_path, monkeypatch
     monkeypatch.setattr(V, "UNIVERSE_SIZE", 3)
     c = with_overrides(cfg, data={"exam_start": "2022-03-01", "dir": str(tmp_path)})
     bars = (parse_utc("2022-03-10") - parse_utc("2022-01-01")) // H1
-    full = lambda seed: make_candles(bars, seed=seed, start="2022-01-01", tf_ms=H1)     # noqa: E731
+    full = lambda seed: make_candles(bars, seed=seed, start="2022-01-01", tf_ms=H1)
     data = {("AAA/USDT", "1h"): full(1), ("BBB/USDT", "1h"): full(2), ("CCC/USDT", "1h"): full(3),
             ("DDD/USDT", "1h"): full(4), ("LATE/USDT", "1h"): full(5).iloc[24 * 30:],
             ("HOLE/USDT", "1h"): full(6).drop(index=range(300, 300 + 24 * 9)).reset_index(drop=True)}

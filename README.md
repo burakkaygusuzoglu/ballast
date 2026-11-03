@@ -5,14 +5,16 @@
 **Pre-registered research and risk-first execution for systematic crypto strategies**
 
 ![Python](https://img.shields.io/badge/python-3.14%20tested-1f6feb)
-![Tests](https://img.shields.io/badge/tests-287%20passing-2da44e)
+[![CI](https://github.com/burakkaygusuzoglu/ballast/actions/workflows/ci.yml/badge.svg)](https://github.com/burakkaygusuzoglu/ballast/actions/workflows/ci.yml)
+![Tests](https://img.shields.io/badge/tests-287-2da44e)
+![Coverage](https://img.shields.io/badge/coverage-92%25-2da44e)
 ![Research rounds](https://img.shields.io/badge/research%20rounds-9%2C%20all%20pre--registered-8e6bbf)
 ![License](https://img.shields.io/badge/license-MIT-9aa5b1)
 
 *Ballast keeps a ship upright in rough water. This project puts risk control first, and then asks whether
 there is an edge at all.*
 
-[Türkçe özet](README.tr.md) · [Protocol registry](docs/research/PROTOCOL_REGISTRY.md) · [Results](#results)
+[Türkçe özet](README.tr.md) · [Results](#results) · [Protocol registry](docs/research/PROTOCOL_REGISTRY.md) · [Design decisions](docs/adr/README.md)
 
 </div>
 
@@ -184,7 +186,8 @@ flowchart LR
 | `arastirma*.py` | Research runners, one per round (`arastirma` = "research", `tur` = "round") |
 | `run.py`, `backtest.py`, `izleme.py` | Paper/live runner, backtest CLI, monitoring dashboard |
 | `config/` | Strategy and risk settings: the live reference bot and the shadow bots |
-| `docs/` | Round 6–9 protocols, protocol registry, literature review |
+| `docs/` | Round 6–9 protocols, [protocol registry](docs/research/PROTOCOL_REGISTRY.md), [architecture decision records](docs/adr/README.md), literature review |
+| `.github/workflows/ci.yml` | CI: ruff lint plus the full test suite on Linux and Windows, with coverage |
 | `tests/` | 287 tests: accounting invariants, causality (no look-ahead), protocol rules, paper/backtest equivalence |
 
 > **About the language.** The project started in Turkish, so module names, comments and console messages are
@@ -200,6 +203,7 @@ cd ballast
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 pytest -q                                               # 287 tests, no network needed
+ruff check .                                            # lint (pip install ruff)
 ```
 
 **Download data and backtest the reference bot** (public market data, no API key needed):
@@ -231,7 +235,11 @@ spot-trade permissions only, keep withdrawals disabled and turn on the IP whitel
 
 ## Testing and quality
 
-- **287 tests** run offline with synthetic candles and a fake exchange.
+- **287 tests** run offline with synthetic candles and a fake exchange, on Linux and Windows in CI.
+- **92 % line coverage** of the `bot/` package (risk manager 98 %, engine 94 %, live broker 82 %). The thin ccxt wrapper
+  is the least covered part (26 %), because it only forwards network calls.
+- **Lint-clean** under ruff (pycodestyle, pyflakes, isort, bugbear, simplify, timezone and exception rules). The
+  few deliberate broad `except` blocks are fail-safe boundaries around exchange calls and are listed in `pyproject.toml`.
 - **No look-ahead.** Signals computed on a truncated history must match the full-history signals bar for bar.
 - **Accounting invariants.** Equity equals cash plus positions; spot never borrows; funding has the right sign
   for longs and shorts; liquidation triggers at the maintenance margin.

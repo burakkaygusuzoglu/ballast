@@ -4,6 +4,7 @@ import json
 
 import pytest
 import yaml
+from helpers import D1, H4, FakeClient, FakeSource, loose_rules, make_candles, resample, with_overrides
 
 import backtest
 import download_data
@@ -15,7 +16,6 @@ from bot.paper import PaperTrader
 from bot.signals import BREAKOUT_CONDITIONS, build_signals, conditions, describe, uses_trend
 from bot.storage import StateStore
 from bot.strategy import CONDITIONS as PULLBACK_CONDITIONS
-from helpers import D1, H4, FakeClient, FakeSource, loose_rules, make_candles, resample, with_overrides
 
 
 @pytest.fixture(scope="module")
@@ -102,7 +102,7 @@ def c1_project(tmp_path, monkeypatch):
         data[(symbol, "1d")] = resample(h4, D1, from_ms=H4)
     end = int(data[("BTC/USDT", "4h")]["ts"].iloc[-1]) + H4
     client = FakeClient(data, now_ms=end + 5_000)
-    factory = lambda *args, **kwargs: client  # noqa: E731
+    factory = lambda *args, **kwargs: client
     monkeypatch.setattr(download_data, "ExchangeClient", factory)
     monkeypatch.setattr(run, "ExchangeClient", factory)
     return tmp_path, client

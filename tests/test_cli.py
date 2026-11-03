@@ -7,13 +7,13 @@ import json
 
 import pytest
 import yaml
+from helpers import H1, M15, TEST_CONFIG_PATH, FakeClient, make_candles, resample
 
 import backtest
 import download_data
 import run
 from bot.config import CONFIG_ENV_VAR
 from bot.data import candle_path
-from helpers import H1, M15, TEST_CONFIG_PATH, FakeClient, make_candles, resample
 
 N_DAYS = 150
 EXAM_START = "2023-04-15"
@@ -42,7 +42,7 @@ def project(tmp_path, monkeypatch, market_data):
 
     end = int(market_data[("BTC/USDT", "15m")]["ts"].iloc[-1]) + M15
     client = FakeClient(market_data, now_ms=end + 5_000)
-    factory = lambda *args, **kwargs: client  # noqa: E731
+    factory = lambda *args, **kwargs: client
     monkeypatch.setattr(download_data, "ExchangeClient", factory)
     monkeypatch.setattr(run, "ExchangeClient", factory)
     return tmp_path, client
@@ -81,7 +81,7 @@ def test_download_then_backtest_dev_and_exam(project, capsys, monkeypatch):
 
 
 def test_paper_cli_once_status_and_reset(project, capsys, monkeypatch):
-    tmp_path, client = project
+    _tmp_path, client = project
     end = client.now
     client.now = end - 6 * H1                               # 6 saat önce başlatıldı
     assert run.main(["--once"]) == 0

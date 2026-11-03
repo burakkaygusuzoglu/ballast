@@ -301,12 +301,12 @@ def monte_carlo(r_multiples: list[float], risk: float, runs: int = MC_RUNS, seed
     """İşlem sırası karıştırılır: aynı işlemlerle hangi düşüşlerin yaşanabileceğini gösterir."""
     r = np.asarray(r_multiples, dtype="float64")
     if len(r) < 2:
-        return {"n": int(len(r)), "avg_r": float(r.mean()) if len(r) else 0.0,
+        return {"n": len(r), "avg_r": float(r.mean()) if len(r) else 0.0,
                 "actual_dd": None, "median_dd": None, "p95_dd": None}
     rng = np.random.default_rng(seed)
     drawdowns = np.array([path_drawdown(rng.permutation(r), risk) for _ in range(runs)])
     return {
-        "n": int(len(r)),
+        "n": len(r),
         "avg_r": float(r.mean()),
         "actual_dd": path_drawdown(r, risk),
         "median_dd": float(np.median(drawdowns)),

@@ -9,8 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from bot.cli import load_config_or_exit, setup_console  # noqa: E402
-from bot.exchange import ExchangeClient  # noqa: E402
+from bot.cli import load_config_or_exit, setup_console
+from bot.exchange import ExchangeClient
 
 
 def main() -> int:
