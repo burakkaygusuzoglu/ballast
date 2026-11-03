@@ -2,3 +2,6 @@
 * text=auto
 *.bat text eol=crlf
 *.png binary
+
+# Protocol files are fingerprinted byte for byte: never convert their line endings.
+docs/tur*_protokol.md -text
