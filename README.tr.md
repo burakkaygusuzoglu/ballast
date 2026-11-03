@@ -37,18 +37,25 @@ komisyon, kayma, funding ve likidasyon.
 
 ## Dokuz tur, kısaca
 
+Her turda 2-5 aday strateji, **veriye bakılmadan önce yazılmış geçme kurallarıyla** sınandı (örneğin: her test
+döneminde kâr, en kötü düşüş %25'in altında, al-tut'tan daha iyi risk/getiri). Bir aday ancak kuralların
+**hepsini** geçerse benimsenir; kurallar sonuçlar görüldükten sonra hiç değiştirilmedi.
+
+- ✓ **Geçti**: en az bir aday bütün kuralları geçti ve benimsendi.
+- ✗ **Geçmedi**: her aday en az bir kuralda kaldı, bu yüzden hiçbiri benimsenmedi.
+
 | Tur | Fikir | Sonuç |
 |---|---|---|
-| 1 | Saatlik dört strateji | Geçmedi: maliyet kârı yedi |
-| 2 | 10 coinde trend takibi | Geçmedi: 2025-2026'da çalışmadı |
-| – | C1 (4 saatlik kanal kırılımı) kilitlendi | Sınav döneminde geçti; referans bot oldu |
-| 3 | C1 iyileştirmeleri | Geçmedi: rejim filtresi (R1) umut verdi |
-| 4 | 27 coinde momentum | Geçmedi |
-| 5 | Uzun vadeli trend ve sınav dönemi | Benimsenmedi; sınavda C1 +%12,7, R1 +%14,7 |
-| 6 | Vadeli: kaldıraç ve short | Geçmedi |
-| 7 | Düşüşe göre azalan risk | Geçmedi |
-| 8 | Trend topluluğu | Geçmedi; ama şimdiye kadarki en iyi risk/getiri dengesi |
-| 9 | Büyüme-optimal kaldıraç (Kelly) | Önerilmez |
+| 1 | Saatlik dört strateji | ✗ Geçmedi: maliyet kârı yedi |
+| 2 | 10 coinde trend takibi | ✗ Geçmedi: 2025-2026'da çalışmadı |
+| – | C1 (4 saatlik kanal kırılımı) kilitlendi | ✓ Sınav döneminde geçti; referans bot oldu |
+| 3 | C1 iyileştirmeleri | ✗ Geçmedi: rejim filtresi (R1) umut verdi |
+| 4 | 27 coinde momentum | ✗ Geçmedi |
+| 5 | Uzun vadeli trend ve sınav dönemi | ✗ Benimsenmedi; sınavda C1 +%12,7, R1 +%14,7 |
+| 6 | Vadeli: kaldıraç ve short | ✗ Geçmedi |
+| 7 | Düşüşe göre azalan risk | ✗ Geçmedi |
+| 8 | Trend topluluğu | ✗ Geçmedi; ama şimdiye kadarki en iyi risk/getiri dengesi |
+| 9 | Büyüme-optimal kaldıraç (Kelly) | ✗ Önerilmez |
 
 ## Neden önemli?
 

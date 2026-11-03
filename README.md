@@ -119,18 +119,26 @@ flowchart LR
 
 ### The nine rounds
 
+Each round tested 2–5 candidate strategies against **pass/fail gates written before the data was seen**
+(for example: profitable in every test period, maximum drawdown under 25 %, better risk-adjusted return than buy
+and hold). A candidate is adopted only if it passes **every** gate; the gates were never changed after the results
+were known. How to read the *Outcome* column:
+
+- ✓ **Passed**: at least one candidate cleared every gate and was adopted.
+- ✗ **No candidate passed**: every candidate failed at least one gate, so nothing was adopted.
+
 | # | Idea | Outcome | Lesson |
 |---|---|---|---|
-| 1 | Four hourly strategies (mean reversion, breakout, trend) | None passed | On hourly bars, fees and slippage ate the edge. Only trend following was robust. |
-| 2 | Trend following on a rule-selected 10-coin universe | None passed | Worked in 2022–2024 and failed in 2025–2026. Correlated stops hit together. |
-| – | **C1** locked: 4h channel breakout 20/10, 12 coins, 0.5 % risk | Passed its exam period | Became the reference bot |
-| 3 | Five C1 improvements (regime filter, pyramiding, momentum rotation …) | None passed | The BTC regime filter (R1) helped; momentum rotation did not survive validation |
-| 4 | Momentum rotation on 27 coins | None passed | A wider universe made it worse |
-| 5 | Long-term 200-day trend and a blend, plus the exam period | Not adopted | C1 +12.7 % and R1 +14.7 % in a locked six-month exam |
-| 6 | Futures: leverage and shorting for C1 / R1 | None passed | More risk did not bring more growth; shorts and funding cost money |
-| 7 | Drawdown-scaled risk (Grossman–Zhou) | None passed | Protection worked, but returns fell and small orders were skipped |
-| 8 | Multi-horizon trend ensemble + volatility targeting | None passed | Best risk/return so far, but −1.1 % in 2025–2026 |
-| 9 | Growth-optimal (Kelly) leverage | Not recommended | In-sample growth, out-of-sample losses |
+| 1 | Four hourly strategies (mean reversion, breakout, trend) | ✗ No candidate passed | On hourly bars, fees and slippage ate the edge. Only trend following was robust. |
+| 2 | Trend following on a rule-selected 10-coin universe | ✗ No candidate passed | Worked in 2022–2024 and failed in 2025–2026. Correlated stops hit together. |
+| – | **C1** locked: 4h channel breakout 20/10, 12 coins, 0.5 % risk | ✓ Passed its exam period | Became the reference bot |
+| 3 | Five C1 improvements (regime filter, pyramiding, momentum rotation …) | ✗ No candidate passed | The BTC regime filter (R1) helped; momentum rotation did not survive validation |
+| 4 | Momentum rotation on 27 coins | ✗ No candidate passed | A wider universe made it worse |
+| 5 | Long-term 200-day trend and a blend, plus the exam period | ✗ Not adopted | C1 +12.7 % and R1 +14.7 % in a locked six-month exam |
+| 6 | Futures: leverage and shorting for C1 / R1 | ✗ No candidate passed | More risk did not bring more growth; shorts and funding cost money |
+| 7 | Drawdown-scaled risk (Grossman–Zhou) | ✗ No candidate passed | Protection worked, but returns fell and small orders were skipped |
+| 8 | Multi-horizon trend ensemble + volatility targeting | ✗ No candidate passed | Best risk/return so far, but −1.1 % in 2025–2026 |
+| 9 | Growth-optimal (Kelly) leverage | ✗ Not recommended | In-sample growth, out-of-sample losses |
 
 **The overall finding:** with honest costs and out-of-sample checks, no setting turned a small account into
 "thousands of times" its size. What grows an account in currency terms is capital and time. More risk,
