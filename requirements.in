@@ -1,0 +1,10 @@
+# Top-level dependencies. The exact, tested versions live in requirements.txt.
+ccxt
+pandas
+numpy
+matplotlib
+pyyaml
+python-dotenv
+pytest
+# ccxt requires exactly winloop==0.6.3 on Windows x64; pinning it here keeps the universal lock consistent.
+winloop==0.6.3 ; sys_platform == 'win32'

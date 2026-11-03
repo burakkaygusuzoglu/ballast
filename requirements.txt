@@ -1,0 +1,47 @@
+# Locked dependencies (exact versions) - tested with CPython 3.14 on Windows x64 and Linux x64.
+# Generated from requirements.in with:
+#   uv pip compile requirements.in --universal --python-version 3.14 --only-binary :all:
+# Do not edit by hand; see README.md (Kutuphane guncelleme).
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.4
+aiohttp-fast-zlib==0.3.0
+aiosignal==1.4.0
+attrs==26.1.0
+ccxt==4.5.85
+certifi==2026.6.17
+cffi==2.0.0
+charset-normalizer==3.4.7
+colorama==0.4.6 ; sys_platform == 'win32'
+contourpy==1.4.0
+cryptography==50.0.2
+cycler==0.12.1
+fonttools==4.66.1
+frozenlist==1.8.0
+idna==3.18
+iniconfig==2.3.1
+kiwisolver==1.5.1
+matplotlib==3.11.2
+multidict==6.7.1
+numpy==2.5.3
+orjson==3.11.9 ; python_full_version < '3.15' and implementation_name == 'cpython' and platform_machine in 'x86_64 AMD64 aarch64 arm64 armv7l i686 ppc64le s390x'
+packaging==26.3
+pandas==3.0.6
+pillow==12.3.0
+pluggy==1.6.0
+propcache==0.5.2
+pycparser==3.0
+pygments==2.21.0
+pyparsing==3.3.3
+pytest==9.1.1
+python-dateutil==2.9.0.post0
+python-dotenv==1.2.4
+pyyaml==6.0.3
+requests==2.34.2
+six==1.17.0
+typing-extensions==4.16.0
+tzdata==2026.5 ; sys_platform == 'emscripten' or sys_platform == 'win32'
+urllib3==2.8.0
+uvloop==0.22.1 ; implementation_name == 'cpython' and sys_platform != 'win32'
+winloop==0.6.3 ; sys_platform == 'win32'
+yarl==1.25.1
+zlib-ng==1.0.0

@@ -1,0 +1,120 @@
+# =============================================================================
+#  Kripto Bot - GÖLGE BOT G-R3A: R3'ün AGRESİF hâli (yalnızca sanal işlem; gerçek emir göndermez)
+#  Kurallar: 3. turdaki R3 = günlük momentum rotasyonu + BTC rejim filtresi (docs/ARASTIRMA.md, 9-11).
+#  İşlem başına %2 risk: geçmiş veride en yüksek büyümeyi veren seviye (docs/ARASTIRMA.md, 12. bölüm).
+#  Bu riskle pozisyonlar büyüdüğü için 50 USDT ile de uygulanabiliyor. Düşüş %37'ye kadar çıkabilir.
+#  Bu dosyayı değiştirmeyin: ileriye dönük test ayarları önceden kilitlendi.
+# =============================================================================
+
+exchange:
+  id: binance
+  market_type: spot         # spot: kaldıraçsız, sadece long
+  timeout_ms: 30000
+
+# 2 Ocak 2022 piyasa değeri sıralamasından kuralla seçilen coinler + BTC ve ETH
+symbols:
+  - BTC/USDT
+  - ETH/USDT
+  - BNB/USDT
+  - SOL/USDT
+  - ADA/USDT
+  - XRP/USDT
+  - DOT/USDT
+  - AVAX/USDT
+  - DOGE/USDT
+  - SHIB/USDT
+  - UNI/USDT
+  - ALGO/USDT
+
+timeframes:
+  entry: 1d                 # karar her gün UTC 00:00'da (UTC+2 bölgesinde 02:00)
+  trend: 1d                 # momentum kullanmaz
+
+data:
+  dir: data
+  start: "2022-01-01"       # geçmiş veri başlangıcı (2022 düşüş yılı dahil)
+  # SINAV DÖNEMİ bu tarihte başlar ve SABİTTİR. Geliştirme yalnızca bundan önceki veriyle
+  # yapılır; bu tarihten sonrası strateji kilitlendikten sonra BİR KEZ görülür.
+  # Sonuçları gördükten sonra bu tarihi değiştirmek sınavı geçersiz kılar.
+  exam_start: "2026-04-01"
+
+costs:
+  maker_fee: 0.001          # %0.1 - Binance spot standart (BNB ile ödenirse 0.00075)
+  taker_fee: 0.001          # %0.1
+  slippage: 0.0005          # piyasa/stop emirlerinde %0.05 kayma varsayımı (kötümser)
+
+strategy:
+  type: momentum            # 28 günlük getiriye göre en güçlü ilk 3 coin
+  # --- Kanal kırılımı (Kaplumbağa Sistem 1 mantığı) ---
+  channel_entry: 20         # kapanış, önceki 20 mumun en yükseğini aşarsa piyasa emriyle al
+  channel_exit: 10          # kapanış, önceki 10 mumun en düşüğünün altına inerse sonraki açılışta sat
+  channel_atr: 20           # ilk stop = giriş - 2 x ATR(20)
+  # Maliyet filtresi: gidiş-dönüş maliyeti (komisyon + kayma), riske edilen tutarın
+  # en fazla bu kadarı olabilir. 0.25 = işlem maliyeti 1R'nin en fazla %25'i.
+  max_cost_r: 0.25
+  exit_on_regime_break: false
+  regime_sma: 200           # BTC 200 günlük ortalamanın altındaysa alım yok, pozisyonlar kapanır
+  momentum_lookback: 28     # getiri penceresi (gün)
+  momentum_top_n: 3         # en güçlü ilk 3 coin alınır
+  momentum_exit_rank: 5     # ilk 5'ten düşen satılır
+  # --- Yalnızca type: pullback için (bu stratejide kullanılmaz) ---
+  ema_trend_mid: 50
+  ema_trend_slow: 200
+  ema_fast: 20
+  rsi_period: 14
+  rsi_pullback_level: 40
+  rsi_trigger_level: 50
+  pullback_lookback: 8
+  bb_period: 20
+  bb_std: 2.0
+  atr_period: 14
+  volume_ma_period: 20
+  obv_ema_period: 20
+
+risk:
+  risk_per_trade: 0.02      # stop çalışırsa kayıp (maliyetler dahil) = özsermayenin %2'si
+  stop_atr_mult: 2.0        # ilk stop = giriş - 2 x ATR
+  trail_atr_mult: 0.0       # 0 = iz süren stop yok; çıkışı kanal kuralı yönetir
+  max_position_pct: 1.0     # tek pozisyon özsermayenin en fazla %100'ü (kaldıraç yok)
+  max_open_positions: 5     # aynı anda en fazla 5 pozisyon (toplam açık risk en fazla %2,5)
+  max_trades_per_day: 4     # tüm semboller toplamı
+  cooldown_bars: 4          # çıkıştan sonra aynı sembolde 4 mum (16 saat) bekle
+  daily_loss_limit: 0.99    # araştırmadaki gibi fiilen kapalı (yalnızca sanal test)
+  max_drawdown_halt: 0.999  # araştırmadaki gibi fiilen kapalı (yalnızca sanal test)
+
+execution:
+  entry_order: market       # kırılımda piyasa emri (taker + kayma)
+  entry_ttl_bars: 1
+
+# Sembol kuralları için varsayılan; veri indirilirken Binance'ten gerçek değerler
+# alınıp data/markets.json'a yazılır ve onlar kullanılır.
+market_rules_default:
+  qty_step: 0.00001
+  min_notional: 5.0
+
+backtest:
+  initial_equity: 10000     # USDT
+  reports_dir: reports
+  open_chart: true          # Windows'ta backtest bitince grafiği otomatik aç
+
+paper:
+  initial_equity: 50.0     # sanal USDT - küçük hesap senaryosu
+  name: golge_r3a           # durum: data/golge_r3a_state.db, günlük: logs/golge_r3a.log
+  history_bars: 1000        # ısınma için çekilen mum sayısı
+  poll_buffer_seconds: 5    # mum kapanışından sonra veriyi almadan önce bekleme
+
+live:
+  testnet: true             # true: Binance test ortamı (sahte para) | false: GERÇEK PARA
+  max_capital: 50.0        # botun kullanabileceği en fazla USDT (spot cüzdandaki serbest bakiyeden)
+
+# Karar kapısı - sonuçlar görülmeden yazıldı. Sonuçlara bakıp gevşetmeyin.
+gate:
+  min_profit_factor: 1.2
+  max_drawdown: 0.20
+  min_trades_dev: 100
+  require_positive_exam: true   # sınav döneminde net kâr pozitif olmalı
+  require_beat_benchmark: true  # getiri/düşüş oranı al-tut'tan iyi olmalı
+
+logging:
+  dir: logs
+  level: INFO

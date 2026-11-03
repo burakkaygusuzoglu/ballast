@@ -1,0 +1,33 @@
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local runtime data (re-creatable)
+data/
+logs/
+*.db
+*.sqlite3
+
+# Backtest reports are re-creatable, but the exam log is an honesty record: keep it.
+reports/*
+!reports/sinav_kayitlari.log
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# Private material that never belongs in this public repository
+*.bat
+docs/ARASTIRMA.md
+teslimler/
+yedek/

@@ -1,0 +1,107 @@
+# =============================================================================
+#  Kripto Bot - TEST AYARLARI (otomatik testler bu dosyayı kullanır; botun ayarı değildir)
+#  - Tüm zamanlar UTC'dir (yerel saati kendine göre çevir).
+#    Bot ekranda bilgisayarın kendi saatini de gösterir; hangi ülkede çalıştığı sonucu değiştirmez.
+#  - Oranlar ondalık yazılır: 0.01 = %1
+#  - Bir değeri değiştirdikten sonra önce geliştirme backtest'i çalıştırın (3_backtest.bat).
+#  - Yazım hatası yaparsanız bot çalışmadan önce hangi satır olduğunu söyler.
+# =============================================================================
+
+exchange:
+  id: binance
+  market_type: spot         # spot: kaldıraçsız, sadece long
+  timeout_ms: 30000
+
+symbols:
+  - BTC/USDT
+  - ETH/USDT
+
+timeframes:
+  entry: 15m                # giriş zamanlaması
+  trend: 1h                 # yön (rejim) filtresi; yalnızca KAPANMIŞ mumlar kullanılır
+
+data:
+  dir: data
+  start: "2022-01-01"       # geçmiş veri başlangıcı (2022 düşüş yılı dahil)
+  # SINAV DÖNEMİ bu tarihte başlar ve SABİTTİR. Geliştirme yalnızca bundan önceki veriyle
+  # yapılır; bu tarihten sonrası strateji kilitlendikten sonra BİR KEZ görülür.
+  # Sonuçları gördükten sonra bu tarihi değiştirmek sınavı geçersiz kılar.
+  exam_start: "2026-04-01"
+
+costs:
+  maker_fee: 0.001          # %0.1 - Binance spot standart (BNB ile ödenirse 0.00075)
+  taker_fee: 0.001          # %0.1
+  slippage: 0.0005          # piyasa/stop emirlerinde %0.05 kayma varsayımı (kötümser)
+
+strategy:
+  type: pullback            # testler 3 katmanlı geri çekilme stratejisini kullanır
+  channel_entry: 20
+  channel_exit: 10
+  channel_atr: 20
+  # Katman 1 - Rejim (1h)
+  ema_trend_mid: 50
+  ema_trend_slow: 200       # long için: kapanış > EMA200 ve EMA50 > EMA200
+  # Katman 2 - Momentum ve zamanlama (15m)
+  ema_fast: 20              # kapanış bu ortalamanın üzerinde olmalı
+  rsi_period: 14
+  rsi_pullback_level: 40    # son mumlarda RSI bunun altına inmiş olmalı (geri çekilme)
+  rsi_trigger_level: 50     # RSI bu seviyeyi yukarı kestiğinde tetik
+  pullback_lookback: 8      # geri çekilme için geriye bakılan mum sayısı
+  # Katman 3 - Oynaklık ve hacim (15m)
+  bb_period: 20
+  bb_std: 2.0               # kapanış üst bandın altında olmalı (yükselişi kovalamayız)
+  atr_period: 14            # stop mesafesi ve pozisyon büyüklüğü buradan gelir
+  volume_ma_period: 20      # hacim, ortalamasının üzerinde olmalı
+  obv_ema_period: 20        # OBV, kendi ortalamasının üzerinde olmalı
+  # Maliyet filtresi: gidiş-dönüş maliyeti (komisyon + kayma), riske edilen tutarın
+  # en fazla bu kadarı olabilir. 0.25 = işlem maliyeti 1R'nin en fazla %25'i.
+  # Oynaklık düşükken stop dar olur ve maliyet riske oranla büyür; o işlemler elenir.
+  max_cost_r: 0.25
+  exit_on_regime_break: true  # 1h rejim bozulursa sonraki mumun açılışında çık
+
+risk:
+  risk_per_trade: 0.01      # stop çalışırsa kayıp (maliyetler dahil) = özsermayenin %1'i
+  stop_atr_mult: 2.0        # ilk stop = giriş - 2 x ATR
+  trail_atr_mult: 3.0       # iz süren stop = en yüksek - 3 x ATR (yalnızca yukarı taşınır)
+  max_position_pct: 0.5     # tek pozisyon özsermayenin en fazla %50'si
+  max_open_positions: 2
+  max_trades_per_day: 4     # tüm semboller toplamı
+  cooldown_bars: 4          # çıkıştan sonra aynı sembolde 4 mum (1 saat) bekle
+  daily_loss_limit: 0.03    # gün içinde %3 kayıp -> UTC gün sonuna kadar yeni işlem yok
+  max_drawdown_halt: 0.20   # tepeden %20 düşüş -> bot tamamen durur (elle sıfırlanır)
+
+execution:
+  entry_order: limit        # limit: limit emir (maker) | market: piyasa (taker + kayma)
+  entry_ttl_bars: 1         # limit emir 1 mum içinde dolmazsa iptal edilir
+
+# Sembol kuralları için varsayılan; veri indirilirken Binance'ten gerçek değerler
+# alınıp data/markets.json'a yazılır ve onlar kullanılır.
+market_rules_default:
+  qty_step: 0.00001
+  min_notional: 5.0
+
+backtest:
+  initial_equity: 10000     # USDT
+  reports_dir: reports
+  open_chart: true          # Windows'ta backtest bitince grafiği otomatik aç
+
+paper:
+  initial_equity: 10000     # sanal USDT
+  history_bars: 1000        # ısınma için çekilen mum sayısı (her zaman dilimi için)
+  poll_buffer_seconds: 5    # mum kapanışından sonra veriyi almadan önce bekleme
+
+live:
+  testnet: true             # true: Binance test ortamı (sahte para) | false: GERÇEK PARA
+  max_capital: 50.0        # botun kullanabileceği en fazla USDT (spot cüzdandaki serbest bakiyeden)
+
+# Karar kapısı - sonuçlar görülmeden yazıldı. Sonuçlara bakıp gevşetmeyin.
+gate:
+  min_profit_factor: 1.2
+  max_drawdown: 0.20
+  min_trades_dev: 100
+  require_positive_exam: true   # sınav döneminde net kâr pozitif olmalı
+  require_beat_benchmark: true  # getiri/düşüş oranı al-tut'tan iyi olmalı
+
+logging:
+  dir: logs
+  level: INFO
